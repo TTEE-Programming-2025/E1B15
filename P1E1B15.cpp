@@ -69,6 +69,7 @@ int main ()
     	    return 0;
 	    }
 	    else
+	    
 		{
 	    	printf("E1B15童琪皓\n");
     	    printf("按任意按鍵結束程式");
