@@ -126,6 +126,97 @@ void computerAssign(char seat[SIZE][SIZE]) {
         system("pause");
     }
 }
+// 使用者自行輸入座位選擇 
+void chooseSeats(char seat[SIZE][SIZE]) {
+    char ch;                     // 用來接收使用者每次輸入的字元
+    int row = 0, col = 0, state = 0;  // row 與 col 儲存解析後的座位座標，state 表示解析的狀態（0=等待列數，1=等待行數，2=等待逗號）
+    char input[50];             // 用來儲存整個輸入的字串（例如 "1-2,3-4"）
+    int index = 0;              // 目前解析的位置
+
+    // 初始化 temp 座位圖為 '-'
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            temp[i][j] = '-';
+
+    printf("請輸入座位（格式：1-2,2-9），按Enter結束：\n");
+
+    // getche() 讀取使用者輸入，直到按下 Enter（ASCII 13）
+    while ((ch = getche()) != 13)
+        input[index++] = ch;
+    input[index] = '\0'; // 字串結尾補上 '\0'
+
+    index = 0;
+    // 開始解析輸入的字串
+    while (input[index] != '\0') {
+        // 處理數字字元（1~9）
+        if (input[index] >= '1' && input[index] <= '9') {
+            if (state == 0) {             // 等待 row 的狀態
+                row = input[index] - '1'; // 轉換為索引（row=1→0）
+                state = 1;                // 接下來等 col
+            }
+            else if (state == 1) {        // 等待 col 的狀態
+                col = input[index] - '1';
+                state = 2;                // 接下來等逗號
+            }
+        }
+        else if (input[index] == '-') {
+            // '-' 應該在 row 與 col 中間出現，所以 state 必須是 1
+            if (state != 1) {
+                printf("\n格式錯誤！\n");
+                system("pause");
+                return;
+            }
+        }
+        else if (input[index] == ',') {
+            // ',' 應該在一個完整座標（row-col）後出現
+            if (state != 2 || row < 0 || row >= SIZE || col < 0 || col >= SIZE) {
+                printf("\n格式或座標錯誤！\n");
+                system("pause");
+                return;
+            }
+
+            // 檢查座位是否已被預訂或重複選取
+            if (seat[row][col] == '*' || temp[row][col] == '@') {
+                printf("\n座位[%d,%d]已預訂或重複！\n", row+1, col+1);
+                system("pause");
+                return;
+            }
+
+            temp[row][col] = '@'; // 暫時記錄選取的座位
+            state = 0;            // 重設狀態，準備處理下一組座標
+        }
+        else {
+            // 若遇到無效的字元
+            printf("\n無效字元！\n");
+            system("pause");
+            return;
+        }
+        index++;
+    }
+
+    // 處理最後一組座標（如果使用者沒打逗號就結束）
+    if (state == 2 && row >= 0 && row < SIZE && col >= 0 && col < SIZE && seat[row][col] != '*')
+        temp[row][col] = '@';
+    else {
+        printf("\n格式錯誤或座位已訂！\n");
+        system("pause");
+        return;
+    }
+
+    // 將 temp 中的選擇結果套用到 seat 中（變成 '@' 狀態）
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (temp[i][j] == '@')
+                seat[i][j] = '@';
+
+    showSeats(seat); // 顯示目前座位圖（含選中的 '@'）
+
+    // 使用者看完後，將 '@' 轉為正式預訂的 '*'
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (seat[i][j] == '@')
+                seat[i][j] = '*';
+}
 // 主程式  
 int main() {
     char password[5];
@@ -216,6 +307,9 @@ int main() {
                 break;
             case 'b':
                 computerAssign(seat);
+                break;
+            case 'c':
+            	chooseSeats(seat);
                 break;
             default:
                 printf("無效選項，請重新輸入。\n");
