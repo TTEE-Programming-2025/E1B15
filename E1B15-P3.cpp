@@ -6,30 +6,30 @@
 #define SIZE 9
 #define BOOKED 10
 
-char seat[SIZE][SIZE];		// 主座位陣列 
-char temp[SIZE][SIZE];		// 暫存陣列，用於座位選擇 
+char seat[SIZE][SIZE];		// Main seat array.
+char temp[SIZE][SIZE];		// Temporary array used for seat selection.
 
-// 初始化所有座位為 '-'，表示未被預訂 
+// Initialize all seats to '-', indicating they are not booked.
 void initSeats(char seat[SIZE][SIZE]) {
     for (int i = 0; i < SIZE; i++)
         for (int j = 0; j < SIZE; j++)
             seat[i][j] = '-';
 }
-// 顯示目前座位狀態
+// Display the current seat status.
 void showSeats(char seat[SIZE][SIZE]) {
     system("cls");
     printf("\\123456789\n");
-    for (int i = SIZE - 1; i >= 0; i--) {	// 從下往上顯示座位
+    for (int i = SIZE - 1; i >= 0; i--) {	// Display the seats from bottom to top.
         printf("%d", i + 1);
         for (int j = 0; j < SIZE; j++) {
             printf("%c", seat[i][j]);
         }
         printf("\n");
     }
-    printf("按任意鍵返回主選單...\n");
+    printf("Press any key to return to the main menu...\n");
     getch();
 }
-// 隨機預訂一些座位，用 '*' 表示已預訂 
+// Randomly book some seats, using '\*' to indicate booked ones.  
 void randomBooking(char seat[SIZE][SIZE]) {
     int count = 0;
     while (count < BOOKED) {
@@ -41,44 +41,44 @@ void randomBooking(char seat[SIZE][SIZE]) {
         }
     }
 }
-// 電腦協助自動安排連續的座位 
+// Automatically arrange consecutive seats with computer assistance.
 void computerAssign(char seat[SIZE][SIZE]) {
     int n, i, j;
-    int found = 0; // 用來記錄是否成功找到合適座位
+    int found = 0; // Used to record whether suitable seats were successfully found.
 
-    // 要求使用者輸入需要的座位數（1~4）
-    printf("請問需要幾個座位 (1~4)：");
+    // Prompt the user to enter the number of seats needed (1–4).
+    printf("How many seats do you need? (1–4)：");
     scanf("%d", &n);
 
-    // 處理需求為1~3個座位的情況
+    // Handle the cases where the seat request is for 1 to 3 seats.
     if (n >= 1 && n <= 3) {
         for (i = 0; i < SIZE && found == 0; i++) {
             for (j = 0; j <= SIZE - n; j++) {
-                // 檢查從 seat[i][j] 開始連續 n 個位置是否為 '-'
+                // Check if there are `n` consecutive positions starting from `seat[i][j]` that are all '-' (available).
                 if (seat[i][j] == '-' &&
                     (n < 2 || seat[i][j+1] == '-') &&
                     (n < 3 || seat[i][j+2] == '-')) {
                     
-                    // 預先標示預約的座位為 '@'
+                    // Pre-mark the reserved seats as '@'.
                     if (n >= 1) seat[i][j] = '@';
                     if (n >= 2) seat[i][j+1] = '@';
                     if (n >= 3) seat[i][j+2] = '@';
 
-                    found = 1; // 表示已找到位置
-                    break;     // 跳出內層迴圈
+                    found = 1; // Indicates that a suitable position has been found.
+                    break;     // Break out of the inner loop.
                 }
             }
         }
     } 
-    // 若需要4個座位
+    // If 4 seats are required.
     else if (n == 4) {
-        // 先嘗試找一排中連續4個空位
+        // First, try to find 4 consecutive available seats in a single row.
         for (i = 0; i < SIZE && found == 0; i++) {
             for (j = 0; j <= SIZE - 4; j++) {
                 if (seat[i][j] == '-' && seat[i][j+1] == '-' &&
                     seat[i][j+2] == '-' && seat[i][j+3] == '-') {
 
-                    // 標記4個橫向座位為 '@'
+                    // Mark 4 consecutive horizontal seats as '@'.
                     seat[i][j] = seat[i][j+1] = seat[i][j+2] = seat[i][j+3] = '@';
                     found = 1;
                     break;
@@ -86,14 +86,14 @@ void computerAssign(char seat[SIZE][SIZE]) {
             }
         }
 
-        // 如果找不到橫向4連位，改找 2x2 的區塊（上下排各兩個）
+        // If no horizontal 4 consecutive seats are found, try to find a 2x2 block (two seats on each of two adjacent rows).
         if (found == 0) {
             for (i = 0; i < SIZE - 1 && found == 0; i++) {
                 for (j = 0; j < SIZE - 1; j++) {
                     if (seat[i][j] == '-' && seat[i][j+1] == '-' &&
                         seat[i+1][j] == '-' && seat[i+1][j+1] == '-') {
                         
-                        // 標記2x2方塊的4個位置為 '@'
+                        // Mark the four positions of the 2x2 block as '@'.
                         seat[i][j] = seat[i][j+1] = seat[i+1][j] = seat[i+1][j+1] = '@';
                         found = 1;
                         break;
@@ -103,137 +103,137 @@ void computerAssign(char seat[SIZE][SIZE]) {
         }
     }
 
-    // 若成功找到位置
+    // If a suitable position is found successfully.
     if (found) {
-        showSeats(seat); // 顯示目前座位狀況（含預約的 '@'）
+        showSeats(seat); // Display the current seat status (including reserved '@' seats).
         char ok;
-        printf("是否滿意這個安排？(y/n)：");
-        scanf(" %c", &ok); // 注意前面有空格是為了忽略前一輸入的換行
+        printf("Are you satisfied with this arrangement?(y/n)：");
+        scanf(" %c", &ok); // Note: The leading space is to ignore the newline character from the previous input.
 
         if (ok == 'y') {
-            // 使用者滿意，將 '@' 轉為正式預約的 '*'
+            // User is satisfied, convert '@' to confirmed booking '\*' seats.
             for (i = 0; i < SIZE; i++)
                 for (j = 0; j < SIZE; j++)
                     if (seat[i][j] == '@') seat[i][j] = '*';
-        } else {			// 不滿意，還原 '@' 為空位 '-'
+        } else {			// Not satisfied, revert '@' back to available '-' seats.
             for (i = 0; i < SIZE; i++)
                 for (j = 0; j < SIZE; j++)
                     if (seat[i][j] == '@') seat[i][j] = '-';
         }
     } else {
-        // 找不到符合需求的連續空位
-        printf("找不到連續 %d 個空位。\n", n);
+        // No consecutive available seats found that meet the requirement.
+        printf("Unable to find %d consecutive available seats.\n", n);
         system("pause");
     }
 }
-// 使用者自行輸入座位選擇 
+// User manually enters seat selection.
 void chooseSeats(char seat[SIZE][SIZE]) {
-    char ch;                     // 用來接收使用者每次輸入的字元
-    int row = 0, col = 0, state = 0;  // row 與 col 儲存解析後的座位座標，state 表示解析的狀態（0=等待列數，1=等待行數，2=等待逗號）
-    char input[50];             // 用來儲存整個輸入的字串（例如 "1-2,3-4"）
-    int index = 0;              // 目前解析的位置
+    char ch;                     // Used to receive each character entered by the user.
+    int row = 0, col = 0, state = 0;  // `row` and `col` store the parsed seat coordinates, and `state` indicates the parsing state (0 = waiting for row, 1 = waiting for column, 2 = waiting for comma).
+    char input[50];             // Used to store the entire input string (e.g., "1-2,3-4").
+    int index = 0;              // Current parsing position.
 
-    // 初始化 temp 座位圖為 '-'
+    // Initialize the `temp` seating chart to '-' (available).
     for (int i = 0; i < SIZE; i++)
         for (int j = 0; j < SIZE; j++)
             temp[i][j] = '-';
 
-    printf("請輸入座位（格式：1-2,2-9），按Enter結束：\n");
+    printf("Please enter seats (format: 1-2,2-9), press Enter to finish：\n");
 
-    // getche() 讀取使用者輸入，直到按下 Enter（ASCII 13）
+    // Use `getche()` to read user input until Enter (ASCII 13) is pressed.
     while ((ch = getche()) != 13)
         input[index++] = ch;
-    input[index] = '\0'; // 字串結尾補上 '\0'
+    input[index] = '\0'; // Append '\0' at the end of the string.
 
     index = 0;
-    // 開始解析輸入的字串
+    // Start parsing the input string.
     while (input[index] != '\0') {
-        // 處理數字字元（1~9）
+        // Processing numeric character (1–9).
         if (input[index] >= '1' && input[index] <= '9') {
-            if (state == 0) {             // 等待 row 的狀態
-                row = input[index] - '1'; // 轉換為索引（row=1→0）
-                state = 1;                // 接下來等 col
+            if (state == 0) {             // Waiting for the row input.
+                row = input[index] - '1'; // Convert to index (row = 1 → 0).
+                state = 1;                // Waiting for the col (column) input.
             }
-            else if (state == 1) {        // 等待 col 的狀態
+            else if (state == 1) {        // Waiting for the col (column) input.
                 col = input[index] - '1';
-                state = 2;                // 接下來等逗號
+                state = 2;                // Waiting for a comma next.
             }
         }
         else if (input[index] == '-') {
-            // '-' 應該在 row 與 col 中間出現，所以 state 必須是 1
+            // The '-' should appear between row and col, so the state must be 1.
             if (state != 1) {
-                printf("\n格式錯誤！\n");
+                printf("\nInvalid format!\n");
                 system("pause");
                 return;
             }
         }
         else if (input[index] == ',') {
-            // ',' 應該在一個完整座標（row-col）後出現
+            // A comma ',' should appear after a complete coordinate pair (row-col).
             if (state != 2 || row < 0 || row >= SIZE || col < 0 || col >= SIZE) {
-                printf("\n格式或座標錯誤！\n");
+                printf("\nInvalid format or coordinates!\n");
                 system("pause");
                 return;
             }
 
-            // 檢查座位是否已被預訂或重複選取
+            // Check if the seat is already booked or has been selected more than once.
             if (seat[row][col] == '*' || temp[row][col] == '@') {
-                printf("\n座位[%d,%d]已預訂或重複！\n", row+1, col+1);
+                printf("\nSeat \[%d,%d] is already booked or duplicated!\n", row+1, col+1);
                 system("pause");
                 return;
             }
 
-            temp[row][col] = '@'; // 暫時記錄選取的座位
-            state = 0;            // 重設狀態，準備處理下一組座標
+            temp[row][col] = '@'; // Temporarily store the selected seats.
+            state = 0;            // Reset status to prepare for processing the next set of coordinates.
         }
         else {
-            // 若遇到無效的字元
-            printf("\n無效字元！\n");
+            // If an invalid character is encountered.
+            printf("\nInvalid character!\n");
             system("pause");
             return;
         }
         index++;
     }
 
-    // 處理最後一組座標（如果使用者沒打逗號就結束）
+    // Process the last set of coordinates (if the user doesn't enter a comma, end input).
     if (state == 2 && row >= 0 && row < SIZE && col >= 0 && col < SIZE && seat[row][col] != '*')
         temp[row][col] = '@';
     else {
-        printf("\n格式錯誤或座位已訂！\n");
+        printf("\nInvalid format or seat already booked!\n");
         system("pause");
         return;
     }
 
-    // 將 temp 中的選擇結果套用到 seat 中（變成 '@' 狀態）
+    // Apply the selection results from `temp` to `seat` (change to '@' status).
     for (int i = 0; i < SIZE; i++)
         for (int j = 0; j < SIZE; j++)
             if (temp[i][j] == '@')
                 seat[i][j] = '@';
 
-    showSeats(seat); // 顯示目前座位圖（含選中的 '@'）
+    showSeats(seat); // Display the current seating chart (including selected '@' seats).
 
-    // 使用者看完後，將 '@' 轉為正式預訂的 '*'
+    // After the user reviews, convert '@' to the confirmed booking symbol '*'.
     for (int i = 0; i < SIZE; i++)
         for (int j = 0; j < SIZE; j++)
             if (seat[i][j] == '@')
                 seat[i][j] = '*';
 }
-// 詢問使用者是否退出程式 
+// Ask the user whether to exit the program.
 void askToExit() {
     char confirm;
     while (1) {
         printf("Continue? (y/n): ");
         scanf(" %c", &confirm);
         if (confirm == 'y') {
-            return; // 回到主選單
+            return; // Return to the main menu.  
         } else if (confirm == 'n') {
-            printf("感謝使用，程式結束。\n");
-            exit(0); // 結束程式
+            printf("Thank you for using the system. Program terminated.\n");
+            exit(0); // Exit the program.
         } else {
-            printf("輸入錯誤，請輸入 'y' 或 'n'\n");
+            printf("Invalid input, please enter 'y' or 'n'.\n");
         }
     }
 }
-// 主程式  
+// Main Program   
 int main() {
     char password[5];
     int count = 0;
@@ -243,7 +243,7 @@ int main() {
 
     srand(time(NULL));
 
-    // 封面畫面
+    // Cover screen  
     printf("|--------------------------------------------|\n");
     printf("| ********  **       **  **    **  *******   |\n");
     printf("|    **     **       **  **    **  **        |\n");
@@ -258,11 +258,11 @@ int main() {
     printf("|                                            |\n");
     printf("|                E1B15童琪皓                 |\n");
     printf("|                                            |\n");
-    printf("|               程式設計作業三               |\n");
+    printf("|          Programming Assignment 3          |\n");
     printf("|                                            |\n");
     printf("|--------------------------------------------|\n");
     printf("|                                            |\n");
-    printf("|             按任意按鍵繼續程式             |\n");
+    printf("|   Press any key to continue the program.   |\n");
     printf("|                                            |\n");
     printf("|--------------------------------------------|\n");
 
@@ -270,7 +270,7 @@ int main() {
     system("cls");
 
     while (count < 3) {
-        printf("請輸入四位數密碼：");
+        printf("Please enter a 4-digit password：");
         for (int i = 0; i < 4; i++) {
             password[i] = getch();
             printf("*");
@@ -278,29 +278,29 @@ int main() {
         password[4] = '\0';
         inputTimes++;
 
-        printf("\n你輸入的密碼是：%s\n", password);
+        printf("\nThe password you entered is：%s\n", password);
 
         if (password[0] == '2' && password[1] == '0' &&
             password[2] == '2' && password[3] == '5') {
-            printf("密碼正確！按任意鍵進入主選單\n");
+            printf("Password correct! Press any key to enter the main menu.\n");
             getch();
             break;
         } else {
-            printf("\a密碼錯誤，請重新輸入。\n");
+            printf("\aIncorrect password, please try again.\n");
             count++;
             if (count == 3) {
-                printf("\n錯誤三次，程式結束。\n");
-                printf("總共輸入了 %d 次密碼。\n", inputTimes);
+                printf("\n Entered incorrectly three times, program terminated.\n");
+                printf("You have entered the password %d times in total.\n", inputTimes);
                 system("pause");
                 return 0;
             }
         }
     }
 
-	initSeats(seat);		 // 呼叫初始化座位的子程式  
-    randomBooking(seat);	 // 隨機先預訂一些座位  
+	initSeats(seat);		 // Call the subroutine to initialize seats.  
+    randomBooking(seat);	 // Randomly pre-book some seats.  
 
-    // 主選單
+    // Main menu. 
     while (1) {
         system("cls");
         printf("|-------------[Booking  System]----------|\n");
@@ -314,7 +314,7 @@ int main() {
         printf("|          d.  Exit                      |\n");
         printf("|                                        |\n");
         printf("|----------------------------------------|\n");
-        printf("請輸入選項：");
+        printf("Please enter an option：");
         scanf(" %c", &Menu);
 
         switch (Menu) {
@@ -331,7 +331,7 @@ int main() {
                 askToExit();
                 exit(0);
             default:
-                printf("無效選項，請重新輸入。\n");
+                printf("Invalid option, please enter again.\n");
                 system("pause");
         }
     }
