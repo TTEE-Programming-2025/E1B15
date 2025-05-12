@@ -338,4 +338,4 @@ int main() {
 
     return 0;
 }
-
+//While completing features a to d, I learned how to use arrays to represent a seat map and apply condition checks and loops to handle random booking, manual selection, and group seating. For example, I used * to show random bookings, @ for grouped seats, and # for user-chosen seats. These helped me understand how to manage 2D arrays better. I also had to deal with user input, handle input formats, and make sure the system responds correctly¡Xthese parts really improved my logic and control flow skills. Overall, this assignment was a bit challenging, especially balancing different booking conditions, but finishing it gave me a strong sense of accomplishment.
