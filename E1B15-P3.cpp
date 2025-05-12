@@ -217,6 +217,22 @@ void chooseSeats(char seat[SIZE][SIZE]) {
             if (seat[i][j] == '@')
                 seat[i][j] = '*';
 }
+// 詢問使用者是否退出程式 
+void askToExit() {
+    char confirm;
+    while (1) {
+        printf("Continue? (y/n): ");
+        scanf(" %c", &confirm);
+        if (confirm == 'y') {
+            return; // 回到主選單
+        } else if (confirm == 'n') {
+            printf("感謝使用，程式結束。\n");
+            exit(0); // 結束程式
+        } else {
+            printf("輸入錯誤，請輸入 'y' 或 'n'\n");
+        }
+    }
+}
 // 主程式  
 int main() {
     char password[5];
@@ -311,6 +327,9 @@ int main() {
             case 'c':
             	chooseSeats(seat);
                 break;
+            case 'd':
+                askToExit();
+                exit(0);
             default:
                 printf("無效選項，請重新輸入。\n");
                 system("pause");
